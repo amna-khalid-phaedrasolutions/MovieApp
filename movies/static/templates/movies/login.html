@@ -18,7 +18,7 @@
     .image {
         width: 50%;
         height: 100vh;
-        background-image: url("/static/my_folder_name/pic1.jpg");
+        background-image: url("/movies/static/static/my_folder_name/pic1.jpg");
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -30,14 +30,15 @@
         flex-direction: row;
     }
     .form {
-        padding: 20px 120px;
+        padding: 120px;
+
         color: antiquewhite;
-        margin: 30px 0 100px 0;
+        margin: 50px 0 100px 0;
     }
     .input {
         width: 100%;
         padding: 30px;
-        margin: 0px 0 20px 0;
+        margin: 10px 0 20px 0;
         border-radius: 10px;
         background-color: transparent;
         text-align: center;
@@ -70,35 +71,26 @@
 
         </div>
         <div class="col-sm-6 form">
-            <h2 class="heading">SignUp Form</h2>
-            <form action="{% url 'movies:createUser' %}" method="POST">
+            <h2 class="heading">Login To Continue</h2>
+            <form action="{% url 'movies:check_user' %}" class="needs-validation" method="POST">
                 {% csrf_token %}
-                <div class="form-group">
-                    <input type="text" class="form-control input" required name="first_name" placeholder="First Name">
+                <div class="form-group mt-3">
+                    <input type="text" class="form-control input" name="username" required placeholder="Enter Username">
+                    <div class="invalid-feedback">
+                        Please Enter username.
+                    </div>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control input" required name="last_name" placeholder="Last Name">
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control input" required name="username" placeholder="Enter Username">
-                </div>
-                <div class="form-group">
-                    <input type="email" class="form-control input" name="email" placeholder="Enter Email">
-                </div>
-                <div class="form-group">
-                    <input type="password" class="form-control input" required name="password" placeholder="Enter Password">
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="admin" value="is_admin" id="flexCheckChecked">
-                    <label class="form-check-label" for="flexCheckChecked">
-                        Is Admin
-                    </label>
+                    <input type="password" class="form-control input text-muted" required name="password" placeholder="Enter Password">
+                    <small  id="passwordHelpInline" class="text-muted">
+                        Must be 8-20 characters long.
+                    </small>
                 </div>
                 <div class="">
                     <button class="button btn btn-outline-info w-100 mt-4" type="submit" value="post">
-                        SignUp
+                        Login
                     </button>
-                    <p class="link"><a href="{% url 'movies:login' %}">Login</a> if you're already registered.</p>
+                    <p class="link">Click here to <a href="{% url 'movies:signup' %}">Register.</a></p>
                 </div>
             </form>
         </div>
