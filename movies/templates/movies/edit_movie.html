@@ -1,0 +1,46 @@
+{% extends 'movies/base.html' %}
+{% load static %}
+    <div>
+        {% block main %}
+            {% if movies %}
+            <form action="{% url 'movies:edit_movie' %}" name="editform" class="p-3" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group pt-4" style="width: 50%; margin-top: 50px;">
+                    <label>Thumbnail: </label>
+                    <input type="file" name="thumbnail">
+                    <input type="hidden" name="id" value="{{ movies.id }}">
+                </div>
+                <div class="form-group" style="width: 50%">
+                    <label>Movie Name</label>
+                    <input type="text" class="form-control" name="title" value="{{ movies.name }}">
+                </div>
+
+                <div class="form-group pt-3" style="width: 50%">
+                    <label for="video_url">Movie URL</label>
+                    <input type="url" class="form-control" id="video_url" name="video_url" value="{{ movies.video_url }}">
+                </div>
+                <div class="form-group pt-3">
+                    <label for="short_desc">Short Description</label>
+                    <input type="text" class="form-control" id="short_desc" name="short_desc" value="{{ movies.short_desc }}">
+                </div>
+                <div class="form-group pt-3">
+                    <label for="long_desc">Long Description</label>
+                    <input type="text" class="form-control" style="height: 100px" id="long_desc" name="long_desc" value="{{ movies.long_desc }}">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="genre">Genre</label>
+                    <select id="genre" name="genre" class="form-control">
+                        <option value="Action">Action</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Romance">Romance</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <button class="btn btn-outline-info" id="add_movie" type="submit" value="post">UPDATE</button>
+                </div>
+
+            </form>
+            {% endif %}
+        {% endblock %}
+    </div>
+

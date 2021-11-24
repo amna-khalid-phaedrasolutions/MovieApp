@@ -13,32 +13,24 @@ class MyUser(User):
         ordering = ('first_name',)
 
     @classmethod
-    def getUsers(cls, request):
-        movies_list = Movie.objects.order_by('id')[:]
-        context = {
-            'movies_list': movies_list,
-        }
-        return render(request, 'movies/user_list.html', context)
+    def getUsers(cls, id1=None):
+        user_list = cls.objects.all()
+        if id1:
+            user_list = user_list.objects.get(id=id1)
+        return user_list
 
-    @staticmethod
-    def createUser(request):
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        fname = request.POST.get('first_name')
-        lname = request.POST.get('last_name')
-        password = request.POST.get('password')
-        user = MyUser.objects.create(username=username, email=email, firstName=fname, lastName=lname,
-                                     password=password)
+    @classmethod
+    def createUser(cls, username, email, fname, lname, password):
+        user = cls.objects.create(username=username, email=email, firstName=fname, lastName=lname,
+                                  password=password)
         user.set_password(password)
         user.save()
-        return redirect('movies:allUsers')
+        return user
 
-    @staticmethod
-    def deleteUser(request):
-        id1 = request.POST.get('delete')
-        user1 = User.objects.get(id=id1)
+    @classmethod
+    def deleteUserQuery(cls, id):
+        user1 = User.objects.get(id=id)
         user1.delete()
-        return redirect('movies:allUsers')
 
 
 class Movie(models.Model):
@@ -53,33 +45,24 @@ class Movie(models.Model):
         return self.name
 
     @classmethod
-    def getMovies(cls, request):
-        movies_list = Movie.objects.order_by('id')[:]
-        context = {
-            'movies_list': movies_list,
-        }
-        return render(request, 'movies/index.html', context)
+    def getMovies(cls, id1=None, title=None):
+        movies_list = Movie.objects.all()
+        if id1:
+            movies_list = cls.objects.get(id=id1)
+        if title:
+            movies_list = cls.objects.get(name__icontains=title)
+        return movies_list
 
-    @staticmethod
-    def createMovie(request):
-        name = request.POST.get('title', None)
-        thumbnail = request.FILES.get('thumbnail')
-        video_url = request.POST.get('video_url')
-        genre = request.POST.get('genre')
-        short_desc = request.POST.get('short_desc')
-        long_desc = request.POST.get('long_desc')
-
+    @classmethod
+    def createMovie(cls, name, thumbnail, video_url, genre, short_desc, long_desc):
         movies = Movie.objects.create(name=name, thumbnail=thumbnail, video_url=video_url, genre=genre,
                                       short_desc=short_desc, long_desc=long_desc)
         movies.save()
-        return redirect('movies:index1')
 
     @staticmethod
-    def deleteMovie(request):
-        id1 = request.POST.get('delete')
+    def deleteMovieQuery(id1):
         movie1 = Movie.objects.get(id=id1)
         movie1.delete()
-        return redirect('movies:index1')
 
 
 class Rating(models.Model):

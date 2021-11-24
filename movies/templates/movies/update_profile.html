@@ -1,0 +1,38 @@
+{% extends 'movies/base.html' %}
+{% load static %}
+    <div>
+        {% block main %}
+            <div  style="width: 50%; padding: 85px; margin-top: 50px; align-items: center">
+                <form action="{% url 'movies:edit_user' %}" class="p-3" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <input type="hidden" name="id" value="{{ user.id }}">
+                        <label>User Name</label>
+                        <input type="text" class="form-control" name="username" value="{{ user.username }}">
+                    </div>
+                    <div class="form-group pt-3">
+                        <label for="first_name">Enter First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.firstName }}">
+                    </div>
+                    <div class="form-group pt-3">
+                        <label for="last_name">Enter Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.lastName }}">
+                    </div>
+                    <div class="form-group pt-3">
+                        <label for="email">Enter Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                    </div>
+                    <div class="form-group pt-3">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control text-muted" id="password" name="password" value="{{ user.password }}">
+                    </div>
+                    <div class="form-group pt-5">
+                        <button class="btn btn-outline-info" id="add_movie" type="submit" value="post">UPDATE</button>
+                    </div>
+
+                </form>
+            </div>
+        {% endblock %}
+    </div>
+

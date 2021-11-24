@@ -3,6 +3,7 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail, BadHeaderError
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404, JsonResponse, HttpResponseRedirect
 from django.template import loader
@@ -27,17 +28,6 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         return render(request, 'movies/user_profile.html', context)
 
 
-class GetMovieView(LoginRequiredMixin, View):
-    def get(self, request, movie_id):
-        try:
-            movie1 = Movie.objects.get(id=movie_id)
-        except Movie.DoesNotExist:
-            raise Http404("Movie does not exist")
-        context = {'movie': movie1}
-
-        return render(request, 'movies/movie_page.html', context)
-
-
 class FilterView(TemplateView, LoginRequiredMixin):
     def post(self, request):
         type1 = request.POST.get('genre')
@@ -50,11 +40,16 @@ class SignupView(TemplateView):
         return render(request, 'movies/signup.html')
 
     def post(self, request):
-        MyUser.createUser()
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        fname = request.POST.get('first_name')
+        lname = request.POST.get('last_name')
+        password = request.POST.get('password')
+        MyUser.createUser(username, email, fname, lname, password)
+        return redirect('movies:index')
 
 
-class LoginView(View):
-    template_name = 'movies/login.html'
+class LoginView(TemplateView):
 
     def get(self, request):
         return render(request, 'movies/login.html')
@@ -83,34 +78,109 @@ class SearchView(TemplateView):
     def post(self, request):
         title = request.POST['input']
         try:
-            movies = Movie.objects.get(name__icontains=title)
+            movies = Movie.getMovies(title)
             context = {'movies': movies}
             return render(request, 'movies/search_movie.html', context)
         except Movie.DoesNotExist:
             raise Http404("Movie does not exist")
 
 
-class AddMovieView(LoginRequiredMixin, View):
+# -
+
+class GetUser(TemplateView):
     def get(self, request):
-        return render(request, 'movies/add_movie.html')
+        user_list = MyUser.getUsers()
+        context = {
+            'user_list': user_list,
+        }
+        return render(request, 'movies/user_list.html', context)
 
-    def post(self, request):
-        Movie.createMovie()
+
+def deleteUser(self, request):
+    id1 = request.POST.get('delete')
+    MyUser.deleteUserQuery(id1)
+    return redirect('movies:allUsers')
 
 
-class AddUserView(LoginRequiredMixin, View):
+class AddUserView(LoginRequiredMixin, TemplateView):
     def get(self, request):
         return render(request, 'movies/add_user.html')
 
     def post(self, request):
-        MyUser.createUser()
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        fname = request.POST.get('first_name')
+        lname = request.POST.get('last_name')
+        password = request.POST.get('password')
+        MyUser.createUser(username, email, fname, lname, password)
+        return redirect('movies:allUsers')
 
 
-class EditMovieView(LoginRequiredMixin, View):
+class EditUserView(LoginRequiredMixin, TemplateView):
     def get(self, request):
         if request.user.is_authenticated:
             id1 = request.POST.get('edit')
-            movie1 = Movie.objects.get(id=id1)
+            user = MyUser.getUsers(id1)
+            context = {
+                'user': user
+            }
+            return render(request, 'movies/update_profile.html', context)
+
+    def post(self, request):
+        id1 = request.POST.get('id')
+        user = User.objects.get(id=id1)
+        name = request.POST.get('username', None)
+        email1 = request.POST.get('email', None)
+        fname = request.POST.get('first_name', None)
+        lname = request.POST.get('last_name', None)
+        passcode = request.POST.get('password', None)
+        user.username = name
+        user.email = email1
+        user.password = passcode
+        user.firstName = fname
+        user.lastName = lname
+        user.save()
+        return redirect('movies:allUsers')
+
+
+# -
+def GetMovie(request, id1):
+    movie = Movie.getMovies(id1)
+    context = {
+        'movie': movie
+    }
+    return render(request, 'movies/movie_page.html', context)
+
+
+class GetMovieView(TemplateView):
+    def get(self, request):
+        user_list = Movie.getMovies()
+        context = {
+            'user_list': user_list,
+        }
+        return render(request, 'movies/index.html', context)
+
+
+class AddMovieView(LoginRequiredMixin, TemplateView):
+    def get(self, request):
+        return render(request, 'movies/add_movie.html')
+
+    def post(self, request):
+        name = request.POST.get('title', None)
+        thumbnail = request.FILES.get('thumbnail')
+        video_url = request.POST.get('video_url')
+        genre = request.POST.get('genre')
+        short_desc = request.POST.get('short_desc')
+        long_desc = request.POST.get('long_desc')
+        Movie.createMovie(name, thumbnail, video_url, genre, short_desc, long_desc)
+        return redirect('movies:index1')
+
+
+class EditMovieView(LoginRequiredMixin, TemplateView):
+    def get(self, request):
+        if request.user.is_authenticated:
+            id1 = request.POST.get('edit')
+            movie1 = Movie.getMovies(id1)
             context = {
                 'movies': movie1
             }
@@ -134,31 +204,10 @@ class EditMovieView(LoginRequiredMixin, View):
         return redirect('movies:index1')
 
 
-class EditUserView(LoginRequiredMixin, View):
-    def get(self, request):
-        if request.user.is_authenticated:
-            id1 = request.POST.get('edit')
-            user1 = User.objects.get(id=id1)
-            context = {
-                'user': user1
-            }
-            return render(request, 'movies/update_profile.html', context)
-
-    def post(self, request):
-        id1 = request.POST.get('id')
-        user = User.objects.get(id=id1)
-        name = request.POST.get('username', None)
-        email1 = request.POST.get('email', None)
-        fname = request.POST.get('first_name', None)
-        lname = request.POST.get('last_name', None)
-        passcode = request.POST.get('password', None)
-        user.username = name
-        user.email = email1
-        user.password = passcode
-        user.firstName = fname
-        user.lastName = lname
-        user.save()
-        return redirect('movies:allUsers')
+def deleteMovie(request):
+    id1 = request.POST.get('delete')
+    Movie.deleteMovieQuery(id1)
+    return redirect('movies:index')
 
 
 def RateMovie(request):
@@ -166,7 +215,7 @@ def RateMovie(request):
     return
 
 
-class password_reset_request(View):
+class password_reset_request(TemplateView):
     def post(self, request):
         if request.method == "POST":
             password_reset_form = PasswordResetForm(request.POST)
@@ -176,7 +225,7 @@ class password_reset_request(View):
                 if associated_users.exists():
                     for user in associated_users:
                         subject = "Password Reset Requested"
-                        email_template_name = "main/password/password_reset_email.txt"
+                        email_template_name = "movies/password/password_reset_email.txt"
                         c = {
                             "email": user.email,
                             'domain': '127.0.0.1:8000',
@@ -193,5 +242,5 @@ class password_reset_request(View):
                             return HttpResponse('Invalid header found.')
                         return redirect("/password_reset/done/")
             password_reset_form = PasswordResetForm()
-            return render(request=request, template_name="/password/password_reset.html",
+            return render(request=request, template_name="movies/password/password_reset.html",
                           context={"password_reset_form": password_reset_form})

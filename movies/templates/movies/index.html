@@ -1,0 +1,49 @@
+{% extends 'movies/base.html' %}
+<style>
+    .section2 {
+        padding: 100px 50px 200px 200px;
+        text-align: center;
+        background-color: black;
+        min-height: 1000px;
+    }
+    .movbar {
+        min-height: 500px;
+        border: 1px solid #264b5d;
+    }
+</style>
+
+{% block main %}
+<div class="main">
+    <section class="main-content">
+        <div class="section1">
+            <p>Watch Your Favorite Movies Here: </p>
+            <button class="btn btn-outline-info" type="submit">LIST ALL</button>
+        </div>
+        <div style="float: right; padding: 100px 0 0 0;">
+            <form action="{% url 'movies:add_movie' %}" style="padding-right: 20px" method="POST">
+                {% csrf_token %}
+                <button class="btn btn-outline-info" type="submit"> ADD MOVIE</button>
+            </form>
+        </div>
+        {% if movies_list %}
+        <div class="row section2">
+            {% for movies in movies_list %}
+            <div class="col-sm-3 m-3 p-0 card-deck movbar">
+                <a href="{{ movies.id }}">
+                    <img class="card-img-top" src="{{ movies.thumbnail.url }}" alt="Card image" style="width:100%">
+                </a>
+                <div class="card-body">
+                    <a href="{{ movies.id }}">
+                        <h4 class="card-title text-light">{{ movies.name }}</h4>
+                    </a>
+                  <p class="card-text text-light">{{ movies.short_desc }}</p>
+                  <a href="{{ movies.video_url }}" class="btn btn-outline-info align-items-baseline">Watch Movie</a>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}
