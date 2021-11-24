@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'movies',
     'django.contrib.admin',
     'django.contrib.auth',
+    'crispy_forms',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -106,6 +107,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -125,4 +128,4 @@ USE_TZ = True
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'movies/static/')
 MEDIA_URL = '/static/'
-STATIC_URL = '/static/movies/images/'
+STATIC_URL = '/static/images/'

@@ -1,0 +1,48 @@
+{% extends '/base.html' %}
+{% load static %}
+    <div>
+        {% block main %}
+            <div class="d-flex flex-row" style="padding: 100px 20px; background-color: black; color: whitesmoke">
+                <div class="p-5">
+                <img class="image" src="{{ movie.thumbnail.url }}" height="315" width="250" />
+                </div>
+
+                <div class="p-5" style="margin-top: 50px; text-align: justify">
+                    <h2>{{ movie.name }}</h2>
+                    <h6>{{ movie.short_desc }}</h6>
+                    <br>
+                    <p style="font-size: 18px">{{ movie.long_desc }}</p>
+                    <div style="margin-top: 2rem;">
+                        <h4>Here is the link to watch online:</h4>
+                        <a href="{{ movie.video_url }}">{{ movie.video_url }}</a>
+                    </div>
+                </div>
+                    <form action="{% url 'movies:edit_movie' %}" class="p-3" method="POST">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-info" type="submit">Edit</button>
+                         <input type="hidden" id="edit" name="edit" value="{{ movie.id }}">
+                    </form>
+                    <form action="{% url 'movies:deleteMovie' %}" class="pt-3" method="POST">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-info" type="submit">Delete</button>
+                        <input type="hidden" id="delete" name="delete" value="{{ movie.id }}">
+                    </form>
+                </div>
+                <div>
+                    <form action="{% url 'movies:rating' %}" class="pt-3" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" id="rating" name="rating" value="{{ movie.id }}">
+                        <label for="rating">Rate the Movie:</label>
+                            <select id="rating" name="rating" class="form-control">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                    </form>
+                </div>
+            </div>
+        {% endblock %}
+    </div>
+

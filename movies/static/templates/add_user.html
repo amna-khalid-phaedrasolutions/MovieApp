@@ -1,0 +1,43 @@
+{% extends '/base.html' %}
+{% load static %}
+    <div>
+        {% block main %}
+            <div  style="width: 50%; padding: 85px; margin-top: 50px; align-items: center">
+                <form action="{% url 'movies:createUser' %}" class="p-3" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" required class="form-control" name="first_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" required class="form-control" name="last_name">
+                    </div>
+                    <div class="form-group">
+                        <label>User Name</label>
+                        <input type="text" required class="form-control" name="username">
+                    </div>
+                    <div class="form-group pt-3">
+                        <label for="email">Enter Email</label>
+                        <input type="email" required class="form-control" id="email" name="email">
+                    </div>
+                    <div class="form-group pt-3">
+                        <label for="password">Password</label>
+                        <input type="password" required class="form-control text-muted" id="password" name="password">
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_admin" value="is_admin" id="flexCheckChecked">
+                        <label class="form-check-label" for="flexCheckChecked">
+                            Is Admin
+                        </label>
+                    </div>
+                    <div class="form-group pt-5">
+                        <button class="btn btn-outline-info" id="add_movie" type="submit" value="post">Add User</button>
+                    </div>
+
+                </form>
+            </div>
+        {% endblock %}
+    </div>
+

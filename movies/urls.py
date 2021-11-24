@@ -33,6 +33,7 @@ urlpatterns = [
     path('editUser', views.EditUserView, name='edit_user'),
     path('UserUpdated', views.EditUserView, name='update_user'),
     path('RateMovie', views.RateMovie, name='rating'),
+    path("password_reset", views.password_reset_request, name="password_reset")
 ]
 
 urlpatterns += staticfiles_urlpatterns()
